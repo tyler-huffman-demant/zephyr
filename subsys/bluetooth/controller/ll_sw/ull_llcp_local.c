@@ -473,6 +473,12 @@ static void lr_act_run(struct ll_conn *conn)
 		llcp_lp_past_run(conn, ctx, NULL);
 		break;
 #endif /* CONFIG_BT_CTLR_SYNC_TRANSFER_SENDER */
+	case PROC_CONN_SUBRATING_REQ:
+		llcp_lp_sr_run(conn, ctx, NULL);
+		break;
+	case PROC_CONN_SUBRATING_IND:
+		llcp_lp_sr_run(conn, ctx, NULL);
+		break;
 	default:
 		/* Unknown procedure */
 		LL_ASSERT(0);

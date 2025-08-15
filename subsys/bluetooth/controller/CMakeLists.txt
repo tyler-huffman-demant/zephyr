@@ -97,6 +97,7 @@ if(CONFIG_BT_CONN)
     ll_sw/ull_llcp_conn_upd.c
     ll_sw/ull_llcp_chmu.c
     ll_sw/ull_llcp_remote.c
+    ll_sw/ull_llcp_sr.c
     )
     if (CONFIG_BT_CTLR_SYNC_TRANSFER_SENDER OR
         CONFIG_BT_CTLR_SYNC_TRANSFER_RECEIVER)

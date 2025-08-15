@@ -20,6 +20,7 @@ add_library(uut STATIC
   ${ZEPHYR_BASE}/subsys/bluetooth/controller/ll_sw/ull_llcp.c
   ${ZEPHYR_BASE}/subsys/bluetooth/controller/ll_sw/ull_llcp_common.c
   ${ZEPHYR_BASE}/subsys/bluetooth/controller/ll_sw/ull_llcp_chmu.c
+  ${ZEPHYR_BASE}/subsys/bluetooth/controller/ll_sw/ull_llcp_sr.c
 )
 
 if (CONFIG_BT_CTLR_PHY)

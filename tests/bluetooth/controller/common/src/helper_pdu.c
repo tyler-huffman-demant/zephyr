@@ -531,6 +531,35 @@ void helper_pdu_encode_periodic_sync_ind(struct pdu_data *pdu, void *param)
 	pdu->llctrl.periodic_sync_ind.sync_conn_event_count = p->sync_conn_event_count;
 }
 
+void helper_pdu_encode_subrate_ind(struct pdu_data *pdu, void *param)
+{
+	struct pdu_data_llctrl_subrate_ind *p = param;
+
+#if 0
+	pdu->ll_id = PDU_DATA_LLID_CTRL;
+	pdu->len = offsetof(struct pdu_data_llctrl, periodic_sync_ind) +
+		sizeof(struct pdu_data_llctrl_periodic_sync_ind);
+	pdu->llctrl.opcode = PDU_DATA_LLCTRL_TYPE_PERIODIC_SYNC_IND;
+
+	pdu->llctrl.periodic_sync_ind.id = sys_cpu_to_le16(p->id);
+
+	memcpy(&pdu->llctrl.periodic_sync_ind.sync_info, &p->sync_info,
+			sizeof(struct pdu_adv_sync_info));
+
+	pdu->llctrl.periodic_sync_ind.conn_event_count = sys_cpu_to_le16(p->conn_event_count);
+	pdu->llctrl.periodic_sync_ind.last_pa_event_counter =
+							sys_cpu_to_le16(p->last_pa_event_counter);
+	pdu->llctrl.periodic_sync_ind.sid = p->sid;
+	pdu->llctrl.periodic_sync_ind.addr_type = p->addr_type;
+	pdu->llctrl.periodic_sync_ind.sca = p->sca;
+	pdu->llctrl.periodic_sync_ind.phy = p->phy;
+
+	memcpy(pdu->llctrl.periodic_sync_ind.adv_addr, p->adv_addr, sizeof(p->adv_addr));
+
+	pdu->llctrl.periodic_sync_ind.sync_conn_event_count = p->sync_conn_event_count;
+#endif
+}
+
 void helper_pdu_verify_version_ind(const char *file, uint32_t line, struct pdu_data *pdu,
 				   void *param)
 {
@@ -1322,4 +1351,32 @@ void helper_pdu_verify_periodic_sync_ind(const char *file, uint32_t line, struct
 	zassert_mem_equal(pdu->llctrl.periodic_sync_ind.adv_addr, p->adv_addr,
 			  sizeof(p->adv_addr),
 			  "adv_addr mismatch.\nCalled at %s:%d\n", file, line);
+}
+
+void helper_pdu_verify_subrate_req(const char *file, uint32_t line, struct pdu_data *pdu,
+					 void *param)
+{
+
+	struct pdu_data_llctrl_subrate_req *p = param;
+
+	zassert_equal(pdu->ll_id, PDU_DATA_LLID_CTRL, "Not a Control PDU.\nCalled at %s:%d\n", file,
+		      line);
+
+	zassert_equal(pdu->llctrl.opcode, PDU_DATA_LLCTRL_TYPE_SUBRATE_REQ,
+		      "Not a LL_SUBRATE_REQ.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.subrate_factor_max, p->subrate_factor_max,
+		      "subrate_factor_max mismatch.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.subrate_factor_min, p->subrate_factor_min,
+		      "subrate_factor_min mismatch.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.max_latency, p->max_latency,
+		      "max_latency mismatch.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.continuation_number, p->continuation_number,
+		      "continuation_number mismatch.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.timeout, p->timeout,
+		      "timeout mismatch.\nCalled at %s:%d\n", file, line);
 }

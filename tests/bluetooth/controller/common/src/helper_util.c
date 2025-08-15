@@ -97,6 +97,7 @@ helper_pdu_encode_func_t *const helper_pdu_encode[] = {
 	[LL_CIS_IND] = helper_pdu_encode_cis_ind,
 	[LL_CIS_TERMINATE_IND] = helper_pdu_encode_cis_terminate_ind,
 	[LL_PERIODIC_SYNC_IND] = helper_pdu_encode_periodic_sync_ind,
+	[LL_SUBRATE_IND] = helper_pdu_encode_subrate_ind,
 	[LL_ZERO] = helper_pdu_encode_zero,
 };
 
@@ -136,6 +137,7 @@ helper_pdu_verify_func_t *const helper_pdu_verify[] = {
 	[LL_CIS_IND] = helper_pdu_verify_cis_ind,
 	[LL_CIS_TERMINATE_IND] = helper_pdu_verify_cis_terminate_ind,
 	[LL_PERIODIC_SYNC_IND] = helper_pdu_verify_periodic_sync_ind,
+	[LL_SUBRATE_REQ] = helper_pdu_verify_subrate_req,
 };
 
 helper_pdu_ntf_verify_func_t *const helper_pdu_ntf_verify[] = {

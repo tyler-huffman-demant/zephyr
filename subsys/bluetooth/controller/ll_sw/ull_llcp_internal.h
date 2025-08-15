@@ -30,6 +30,8 @@ enum llcp_proc {
 	PROC_CIS_TERMINATE,
 	PROC_SCA_UPDATE,
 	PROC_PERIODIC_SYNC,
+	PROC_CONN_SUBRATING_REQ,
+	PROC_CONN_SUBRATING_IND,
 	/* A helper enum entry, to use in pause procedure context */
 	PROC_NONE = 0x0,
 };
@@ -343,6 +345,14 @@ struct proc_ctx {
 #endif /* CONFIG_BT_CTLR_SYNC_TRANSFER_SENDER */
 		} periodic_sync;
 #endif /* CONFIG_BT_CTLR_SYNC_TRANSFER_RECEIVER || CONFIG_BT_CTLR_SYNC_TRANSFER_SENDER */
+//TODO: Need a config flag? It's just a union?
+		struct {
+			uint16_t subrate_min;
+			uint16_t subrate_max;
+			uint16_t latency;
+			uint16_t continuation_number;
+			uint16_t timeout;
+		} subrating;
 	} data;
 
 	struct {
@@ -794,6 +804,8 @@ void llcp_pdu_encode_cis_req(struct proc_ctx *ctx, struct pdu_data *pdu);
 void llcp_pdu_encode_cis_ind(struct proc_ctx *ctx, struct pdu_data *pdu);
 void llcp_pdu_decode_cis_rsp(struct proc_ctx *ctx, struct pdu_data *pdu);
 
+void llcp_pdu_encode_subrate_req_or_ind(struct proc_ctx *ctx, struct pdu_data *pdu, bool is_req);
+
 
 /*
  * Periodic Advertising Sync Transfers Procedure Helper
@@ -812,6 +824,9 @@ void llcp_rp_past_run(struct ll_conn *conn, struct proc_ctx *ctx, void *param);
 void llcp_rp_past_rx(struct ll_conn *conn, struct proc_ctx *ctx, struct node_rx_pdu *rx);
 #endif /* CONFIG_BT_CTLR_SYNC_TRANSFER_RECEIVER */
 
+//if defined subrating
+void llcp_lp_sr_run(struct ll_conn *conn, struct proc_ctx *ctx, void *param);
+//endif
 #ifdef ZTEST_UNITTEST
 bool llcp_lr_is_disconnected(struct ll_conn *conn);
 bool llcp_lr_is_idle(struct ll_conn *conn);

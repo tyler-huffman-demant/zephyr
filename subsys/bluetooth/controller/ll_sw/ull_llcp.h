@@ -184,6 +184,19 @@ uint8_t ull_cp_cis_terminate(struct ll_conn *conn, struct ll_conn_iso_stream *ci
 uint8_t ull_cp_cis_create(struct ll_conn *conn, struct ll_conn_iso_stream *cis);
 
 /**
+ * @brief Initiate a Subrate Request Procedure.
+ */
+uint8_t ull_cp_subrate_request(struct ll_conn *conn, uint16_t subrate_min, uint16_t subrate_max,
+			   uint16_t latency, uint16_t continuation_number, uint16_t timeout);
+
+/**
+ * @brief Initiate a Subrate Indication Procedure.
+ */
+uint8_t ull_cp_subrate_indication(struct ll_conn *conn, uint16_t subrate_min, uint16_t subrate_max,
+			   uint16_t latency, uint16_t continuation_number, uint16_t timeout);
+
+
+/**
  * @brief Resume CIS create after CIS offset calculation.
  */
 void ull_cp_cc_offset_calc_reply(struct ll_conn *conn, uint32_t cis_offset_min,

@@ -623,6 +623,11 @@ enum pdu_data_llctrl_type {
 	PDU_DATA_LLCTRL_TYPE_CIS_RSP = 0x20,
 	PDU_DATA_LLCTRL_TYPE_CIS_IND = 0x21,
 	PDU_DATA_LLCTRL_TYPE_CIS_TERMINATE_IND = 0x22,
+	PDU_DATA_LLCTRL_TYPE_POWER_CONTROL_REQ = 0x23,
+	PDU_DATA_LLCTRL_TYPE_POWER_CONTROL_RSP = 0x24,
+	PDU_DATA_LLCTRL_TYPE_POWER_CHANGE_IND = 0x25,
+	PDU_DATA_LLCTRL_TYPE_SUBRATE_REQ = 0x26,
+	PDU_DATA_LLCTRL_TYPE_SUBRATE_IND = 0x27,
 	PDU_DATA_LLCTRL_TYPE_UNUSED = 0xFF
 };
 
@@ -824,6 +829,26 @@ struct pdu_data_llctrl_cte_rsp {
 	/* no members */
 } __packed;
 
+struct pdu_data_llctrl_periodic_sync_ind {
+	uint16_t id;
+	struct pdu_adv_sync_info sync_info;
+	uint16_t conn_event_count;
+	uint16_t last_pa_event_counter;
+#ifdef CONFIG_LITTLE_ENDIAN
+	uint8_t  sid:4;
+	uint8_t  addr_type:1;
+	uint8_t  sca:3;
+#else
+	uint8_t  sca:3;
+	uint8_t  addr_type:1;
+	uint8_t  sid:4;
+#endif /* CONFIG_LITTLE_ENDIAN */
+	uint8_t  phy;
+	uint8_t  adv_addr[6];
+	uint16_t sync_conn_event_count;
+} __packed;
+
+
 struct pdu_data_llctrl_clock_accuracy_req {
 	uint8_t sca;
 } __packed;
@@ -891,23 +916,25 @@ struct pdu_data_llctrl_cis_terminate_ind {
 	uint8_t  error_code;
 } __packed;
 
-struct pdu_data_llctrl_periodic_sync_ind {
-	uint16_t id;
-	struct pdu_adv_sync_info sync_info;
-	uint16_t conn_event_count;
-	uint16_t last_pa_event_counter;
-#ifdef CONFIG_LITTLE_ENDIAN
-	uint8_t  sid:4;
-	uint8_t  addr_type:1;
-	uint8_t  sca:3;
-#else
-	uint8_t  sca:3;
-	uint8_t  addr_type:1;
-	uint8_t  sid:4;
-#endif /* CONFIG_LITTLE_ENDIAN */
-	uint8_t  phy;
-	uint8_t  adv_addr[6];
-	uint16_t sync_conn_event_count;
+struct pdu_data_llctrl_power_control_req {};
+struct pdu_data_llctrl_power_control_rsp {};
+struct pdu_data_llctrl_power_change_ind {};
+
+struct pdu_data_llctrl_subrate_req {
+	uint16_t subrate_factor_min;
+	uint16_t subrate_factor_max;
+	uint16_t max_latency;
+	uint16_t continuation_number;
+	uint16_t timeout;
+} __packed;
+
+struct pdu_data_llctrl_subrate_ind {
+	uint16_t subrate_factor_min;
+	uint16_t subrate_factor_max;
+	uint16_t max_latency;
+	uint16_t continuation_number;
+	uint16_t timeout;
+
 } __packed;
 
 struct pdu_data_llctrl {
@@ -941,13 +968,18 @@ struct pdu_data_llctrl {
 		struct pdu_data_llctrl_min_used_chans_ind min_used_chans_ind;
 		struct pdu_data_llctrl_cte_req cte_req;
 		struct pdu_data_llctrl_cte_rsp cte_rsp;
+		struct pdu_data_llctrl_periodic_sync_ind periodic_sync_ind;
 		struct pdu_data_llctrl_clock_accuracy_req clock_accuracy_req;
 		struct pdu_data_llctrl_clock_accuracy_rsp clock_accuracy_rsp;
 		struct pdu_data_llctrl_cis_req cis_req;
 		struct pdu_data_llctrl_cis_rsp cis_rsp;
 		struct pdu_data_llctrl_cis_ind cis_ind;
 		struct pdu_data_llctrl_cis_terminate_ind cis_terminate_ind;
-		struct pdu_data_llctrl_periodic_sync_ind periodic_sync_ind;
+		struct pdu_data_llctrl_power_control_req power_control_req;
+		struct pdu_data_llctrl_power_control_rsp power_control_rsp;
+		struct pdu_data_llctrl_power_change_ind power_change_ind;
+		struct pdu_data_llctrl_subrate_req subrate_req;
+		struct pdu_data_llctrl_subrate_ind subrate_ind;
 	} __packed;
 } __packed;
 

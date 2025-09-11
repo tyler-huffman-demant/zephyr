@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
+#set(CMAKE_BUILD_TYPE "Debug")
 
 cmake_minimum_required(VERSION 3.20.0)
 
@@ -8,6 +9,8 @@ project(bluetooth_ull_llcp_phy_update)
 
 add_subdirectory(${ZEPHYR_BASE}/tests/bluetooth/controller/common common)
 add_subdirectory(${ZEPHYR_BASE}/tests/bluetooth/controller/uut uut)
+
+#add_compile_options(-Og -g)
 
 target_link_libraries(testbinary PRIVATE uut common)
 

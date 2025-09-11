@@ -138,6 +138,7 @@ void ll_rx_mem_release(void **node_rx)
 		case NODE_RX_TYPE_PHY_UPDATE:
 		case NODE_RX_TYPE_CIS_REQUEST:
 		case NODE_RX_TYPE_CIS_ESTABLISHED:
+		case NODE_RX_TYPE_SUBRATE_CHANGE:
 
 			ll_rx_link_inc_quota(1);
 			mem_release(rx_free, &mem_pdu_rx.free);

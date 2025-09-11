@@ -30,8 +30,8 @@ enum llcp_proc {
 	PROC_CIS_TERMINATE,
 	PROC_SCA_UPDATE,
 	PROC_PERIODIC_SYNC,
-	PROC_CONN_SUBRATING_REQ,
-	PROC_CONN_SUBRATING_IND,
+	PROC_CONN_SUBRATE_UPDATE,
+	PROC_CONN_SUBRATE_REQUEST,
 	/* A helper enum entry, to use in pause procedure context */
 	PROC_NONE = 0x0,
 };
@@ -805,6 +805,8 @@ void llcp_pdu_encode_cis_ind(struct proc_ctx *ctx, struct pdu_data *pdu);
 void llcp_pdu_decode_cis_rsp(struct proc_ctx *ctx, struct pdu_data *pdu);
 
 void llcp_pdu_encode_subrate_req_or_ind(struct proc_ctx *ctx, struct pdu_data *pdu, bool is_req);
+void llcp_lp_sr_tx_ack(struct ll_conn *conn, struct proc_ctx *ctx, void *param);
+void llcp_lp_sr_tx_ntf(struct ll_conn *conn, struct proc_ctx *ctx);
 
 
 /*
@@ -826,6 +828,7 @@ void llcp_rp_past_rx(struct ll_conn *conn, struct proc_ctx *ctx, struct node_rx_
 
 //if defined subrating
 void llcp_lp_sr_run(struct ll_conn *conn, struct proc_ctx *ctx, void *param);
+void llcp_lp_sr_rx(struct ll_conn *conn, struct proc_ctx *ctx, struct node_rx_pdu *rx);
 //endif
 #ifdef ZTEST_UNITTEST
 bool llcp_lr_is_disconnected(struct ll_conn *conn);

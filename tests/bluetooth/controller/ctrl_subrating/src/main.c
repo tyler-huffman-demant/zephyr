@@ -112,7 +112,7 @@ ZTEST(central_loc, test_subrating_ind_accept)
 	struct node_rx_pdu *ntf;
 	struct pdu_data *pdu;
 
-	struct node_rx_pu cu = { .status = BT_HCI_ERR_SUCCESS };
+	struct node_rx_subrate_change su = {  };
 
 	/* Role */
 	test_set_role(&conn, BT_HCI_ROLE_CENTRAL);
@@ -121,7 +121,7 @@ ZTEST(central_loc, test_subrating_ind_accept)
 	ull_cp_state_set(&conn, ULL_CP_CONNECTED);
 
 	/* Initiate a Connection Parameter Request Procedure */
-	err = ull_cp_subrate_indication(&conn, SUBRATE_MIN, SUBRATE_MAX, LATENCY, CONTINUATION_NUMBER, SUPERVISION_TIMEOUT);
+	err = ull_cp_subrate_update(&conn, SUBRATE_MIN, SUBRATE_MAX, LATENCY, CONTINUATION_NUMBER, SUPERVISION_TIMEOUT);
 	zassert_equal(err, BT_HCI_ERR_SUCCESS);
 
 	/* Prepare */
@@ -138,6 +138,14 @@ ZTEST(central_loc, test_subrating_ind_accept)
 
 	/* Release Tx */
 	ull_cp_release_tx(&conn, tx);
+
+	ut_rx_node(NODE_SUBRATE_CHANGE, &ntf, &su);
+	ut_rx_q_is_empty();
+
+	/* Release Ntf */
+	release_ntf(ntf);
+	zassert_equal(llcp_ctx_buffers_free(), test_ctx_buffers_cnt(),
+		      "Free CTX buffers %d", llcp_ctx_buffers_free());
 
 }
 
@@ -161,7 +169,7 @@ ZTEST(central_loc, test_subrating_ind_accept)
  *    |                           |<--------------------------|
  *    |                           |                           |
  *    |                           |   LL_Ack                  |
- *    |                           |<--------------------------|
+ *    |                           |-------------------------->|
  *    |                           |                           |
  *    | LE Subrate Change         |                           |
  *    |<--------------------------|                           |
@@ -171,10 +179,10 @@ ZTEST(periph_loc, test_subrating_req_accept)
 {
 	uint8_t err;
 	struct node_tx *tx;
-	//struct node_rx_pdu *ntf;
+	struct node_rx_pdu *ntf;
 	//struct pdu_data *pdu;
 
-	//struct node_rx_pu cu = { .status = BT_HCI_ERR_SUCCESS };
+	struct node_rx_subrate_change su = {  };
 
 	/* Role */
 	test_set_role(&conn, BT_HCI_ROLE_PERIPHERAL);
@@ -196,11 +204,22 @@ ZTEST(periph_loc, test_subrating_req_accept)
 	/* Rx */
 	lt_tx(LL_SUBRATE_IND, &conn, &subrate_ind);
 
-	/* TX Ack */
-	event_tx_ack(&conn, tx);
-
 	/* Done */
 	event_done(&conn);
+
+	event_prepare(&conn);
+	event_done(&conn);
+
+	/* Release Tx */
+	ull_cp_release_tx(&conn, tx);
+
+	ut_rx_node(NODE_SUBRATE_CHANGE, &ntf, &su);
+	ut_rx_q_is_empty();
+
+	/* Release Ntf */
+	release_ntf(ntf);
+	zassert_equal(llcp_ctx_buffers_free(), test_ctx_buffers_cnt(),
+		      "Free CTX buffers %d", llcp_ctx_buffers_free());
 }
 
 #if 0

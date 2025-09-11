@@ -192,7 +192,7 @@ uint8_t ull_cp_subrate_request(struct ll_conn *conn, uint16_t subrate_min, uint1
 /**
  * @brief Initiate a Subrate Indication Procedure.
  */
-uint8_t ull_cp_subrate_indication(struct ll_conn *conn, uint16_t subrate_min, uint16_t subrate_max,
+uint8_t ull_cp_subrate_update(struct ll_conn *conn, uint16_t subrate_min, uint16_t subrate_max,
 			   uint16_t latency, uint16_t continuation_number, uint16_t timeout);
 
 

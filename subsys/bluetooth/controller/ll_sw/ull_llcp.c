@@ -1033,12 +1033,12 @@ uint8_t ull_cp_conn_update(struct ll_conn *conn, uint16_t interval_min, uint16_t
 
 	return BT_HCI_ERR_SUCCESS;
 }
-static uint8_t ull_cp_subrate_request_or_ind(struct ll_conn *conn, uint16_t subrate_min, uint16_t subrate_max,
+static uint8_t ull_cp_subrate_request_or_update(struct ll_conn *conn, uint16_t subrate_min, uint16_t subrate_max,
 				uint16_t latency, uint16_t continuation_number, uint16_t timeout, bool is_request)
 {
 	struct proc_ctx *ctx;
 
-	enum llcp_proc proc = is_request ? PROC_CONN_SUBRATING_REQ : PROC_CONN_SUBRATING_IND;
+	enum llcp_proc proc = is_request ? PROC_CONN_SUBRATE_REQUEST : PROC_CONN_SUBRATE_UPDATE;
 
 	ctx = llcp_create_local_procedure(proc);
 
@@ -1061,13 +1061,13 @@ static uint8_t ull_cp_subrate_request_or_ind(struct ll_conn *conn, uint16_t subr
 uint8_t ull_cp_subrate_request(struct ll_conn *conn, uint16_t subrate_min, uint16_t subrate_max,
 				uint16_t latency, uint16_t continuation_number, uint16_t timeout)
 {
-	return ull_cp_subrate_request_or_ind(conn, subrate_min, subrate_max, latency, continuation_number, timeout, true);
+	return ull_cp_subrate_request_or_update(conn, subrate_min, subrate_max, latency, continuation_number, timeout, true);
 }
 
-uint8_t ull_cp_subrate_indication(struct ll_conn *conn, uint16_t subrate_min, uint16_t subrate_max,
+uint8_t ull_cp_subrate_update(struct ll_conn *conn, uint16_t subrate_min, uint16_t subrate_max,
 				uint16_t latency, uint16_t continuation_number, uint16_t timeout)
 {
-	return ull_cp_subrate_request_or_ind(conn, subrate_min, subrate_max, latency, continuation_number, timeout, false);
+	return ull_cp_subrate_request_or_update(conn, subrate_min, subrate_max, latency, continuation_number, timeout, false);
 }
 
 #if defined(CONFIG_BT_CTLR_SYNC_TRANSFER_SENDER)

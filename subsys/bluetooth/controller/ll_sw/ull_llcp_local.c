@@ -324,6 +324,10 @@ void llcp_lr_rx(struct ll_conn *conn, struct proc_ctx *ctx, memq_link_t *link,
 		llcp_lp_comm_rx(conn, ctx, rx);
 		break;
 #endif /* CONFIG_BT_CTLR_SCA_UPDATE */
+	case PROC_CONN_SUBRATE_UPDATE:
+	case PROC_CONN_SUBRATE_REQUEST:
+		llcp_lp_sr_rx(conn, ctx, rx);
+		break;
 	default:
 		/* Unknown procedure */
 		LL_ASSERT(0);
@@ -369,6 +373,10 @@ void llcp_lr_tx_ack(struct ll_conn *conn, struct proc_ctx *ctx, struct node_tx *
 		llcp_lp_past_tx_ack(conn, ctx, tx);
 		break;
 #endif /* defined(CONFIG_BT_CTLR_SYNC_TRANSFER_SENDER) */
+//TODO: Not sure if it's IND or not?
+	case PROC_CONN_SUBRATE_UPDATE:
+		llcp_lp_sr_tx_ack(conn, ctx, tx);
+		break;
 	default:
 		break;
 		/* Ignore tx_ack */
@@ -388,6 +396,10 @@ void llcp_lr_tx_ntf(struct ll_conn *conn, struct proc_ctx *ctx)
 		llcp_lp_pu_tx_ntf(conn, ctx);
 		break;
 #endif /* CONFIG_BT_CTLR_PHY */
+	case PROC_CONN_SUBRATE_REQUEST:
+	case PROC_CONN_SUBRATE_UPDATE:
+		llcp_lp_sr_tx_ntf(conn, ctx);
+		break;
 	default:
 		/* Ignore other procedures */
 		break;
@@ -473,10 +485,8 @@ static void lr_act_run(struct ll_conn *conn)
 		llcp_lp_past_run(conn, ctx, NULL);
 		break;
 #endif /* CONFIG_BT_CTLR_SYNC_TRANSFER_SENDER */
-	case PROC_CONN_SUBRATING_REQ:
-		llcp_lp_sr_run(conn, ctx, NULL);
-		break;
-	case PROC_CONN_SUBRATING_IND:
+	case PROC_CONN_SUBRATE_REQUEST:
+	case PROC_CONN_SUBRATE_UPDATE:
 		llcp_lp_sr_run(conn, ctx, NULL);
 		break;
 	default:

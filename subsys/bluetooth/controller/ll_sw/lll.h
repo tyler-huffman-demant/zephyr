@@ -310,6 +310,8 @@ enum node_rx_type {
 	NODE_RX_TYPE_IQ_SAMPLE_REPORT_LLL_RELEASE,
 	NODE_RX_TYPE_SYNC_TRANSFER_RECEIVED,
 	NODE_RX_TYPE_PATH_LOSS,
+	//TODO: Check that this is the right place
+	NODE_RX_TYPE_SUBRATE_CHANGE,
 	/* Signals retention (ie non-release) of rx node */
 	NODE_RX_TYPE_RETAIN,
 

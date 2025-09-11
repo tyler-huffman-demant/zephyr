@@ -306,3 +306,7 @@ struct node_rx_path_loss {
 	uint8_t current_path_loss;
 	uint8_t zone_entered;
 };
+
+//TODO: Fill out
+struct node_rx_subrate_change {
+};

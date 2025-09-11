@@ -535,6 +535,12 @@ void helper_pdu_encode_subrate_ind(struct pdu_data *pdu, void *param)
 {
 	struct pdu_data_llctrl_subrate_ind *p = param;
 
+	pdu->ll_id = PDU_DATA_LLID_CTRL;
+	pdu->len = offsetof(struct pdu_data_llctrl, subrate_ind) +
+		sizeof(struct pdu_data_llctrl_subrate_ind);
+	pdu->llctrl.opcode = PDU_DATA_LLCTRL_TYPE_SUBRATE_IND;
+	//TODO: Fill out the important stuff
+
 #if 0
 	pdu->ll_id = PDU_DATA_LLID_CTRL;
 	pdu->len = offsetof(struct pdu_data_llctrl, periodic_sync_ind) +
@@ -853,6 +859,21 @@ void helper_node_verify_peer_sca_update(const char *file, uint32_t line, struct 
 		      "Not an SCA node.\nCalled at %s:%d\n", file, line);
 	zassert_equal(pdu->status, p->status, "Status mismatch.\nCalled at %s:%d\n", file, line);
 	zassert_equal(pdu->sca, p->sca, "SCA mismatch.\nCalled at %s:%d\n", file, line);
+}
+
+void helper_node_subrate_change(const char *file, uint32_t line, struct node_rx_pdu *rx,
+				   void *param)
+{
+	struct node_rx_subrate_change *pdu = (struct node_rx_subrate_change *)rx->pdu;
+	struct node_rx_subrate_change *p = param;
+
+	zassert_equal(rx->hdr.type, NODE_RX_TYPE_SUBRATE_CHANGE,
+		      "Not a subrate change node.\nCalled at %s:%d\n", file, line);
+//TODO: Fill this out
+#if 0
+	zassert_equal(pdu->status, p->status, "Status mismatch.\nCalled at %s:%d\n", file, line);
+	zassert_equal(pdu->sca, p->sca, "SCA mismatch.\nCalled at %s:%d\n", file, line);
+#endif
 }
 
 void helper_pdu_verify_unknown_rsp(const char *file, uint32_t line, struct pdu_data *pdu,
@@ -1356,13 +1377,40 @@ void helper_pdu_verify_periodic_sync_ind(const char *file, uint32_t line, struct
 void helper_pdu_verify_subrate_req(const char *file, uint32_t line, struct pdu_data *pdu,
 					 void *param)
 {
-
 	struct pdu_data_llctrl_subrate_req *p = param;
 
 	zassert_equal(pdu->ll_id, PDU_DATA_LLID_CTRL, "Not a Control PDU.\nCalled at %s:%d\n", file,
 		      line);
 
 	zassert_equal(pdu->llctrl.opcode, PDU_DATA_LLCTRL_TYPE_SUBRATE_REQ,
+		      "Not a LL_SUBRATE_REQ.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.subrate_factor_max, p->subrate_factor_max,
+		      "subrate_factor_max mismatch.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.subrate_factor_min, p->subrate_factor_min,
+		      "subrate_factor_min mismatch.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.max_latency, p->max_latency,
+		      "max_latency mismatch.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.continuation_number, p->continuation_number,
+		      "continuation_number mismatch.\nCalled at %s:%d\n", file, line);
+
+	zassert_equal(pdu->llctrl.subrate_req.timeout, p->timeout,
+		      "timeout mismatch.\nCalled at %s:%d\n", file, line);
+}
+
+void helper_pdu_verify_subrate_ind(const char *file, uint32_t line, struct pdu_data *pdu,
+					 void *param)
+{
+
+	struct pdu_data_llctrl_subrate_ind *p = param;
+
+	zassert_equal(pdu->ll_id, PDU_DATA_LLID_CTRL, "Not a Control PDU.\nCalled at %s:%d\n", file,
+		      line);
+
+	zassert_equal(pdu->llctrl.opcode, PDU_DATA_LLCTRL_TYPE_SUBRATE_IND,
 		      "Not a LL_SUBRATE_REQ.\nCalled at %s:%d\n", file, line);
 
 	zassert_equal(pdu->llctrl.subrate_req.subrate_factor_max, p->subrate_factor_max,

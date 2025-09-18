@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
+set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_C_FLAGS_DEBUG "-Og -g" CACHE STRING "" FORCE)
 
 cmake_minimum_required(VERSION 3.20.0)
 

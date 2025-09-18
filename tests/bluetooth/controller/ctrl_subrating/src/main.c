@@ -222,6 +222,88 @@ ZTEST(periph_loc, test_subrating_req_accept)
 		      "Free CTX buffers %d", llcp_ctx_buffers_free());
 }
 
+/*
+ * Peripheral-initiated Subrating Request procedure.
+ * Peripheral requests start of subrating, Central rejects.
+ *
+ * +----+                        +----+                    +----+
+ * | UT |                        | LL |                    | LT |
+ * +----+                        +----+                    +----+
+ *    |                           |                           |
+ *    | LE Subrate Request        |                           |
+ *    |-------------------------->|                           |
+ *    |                           |                           |
+ *    | Command status            |                           |
+ *    |<--------------------------|                           |
+ *    |                           |   LL_SUBRATE_REQ          |
+ *    |                           |-------------------------->|
+ *    |                           |                           |
+ *    |                           |   LL_REJECT_EXT_IND       |
+ *    |                           |<--------------------------|
+ *    |                           |                           |
+ *    |                           |   LL_Ack                  |
+ *    |                           |-------------------------->|
+ *    |                           |                           |
+ *    | LE Subrate Change         |                           |
+ *    | Status=Error code         |                           |
+ *    |<--------------------------|                           |
+ *    |                           |                           |
+ */
+ZTEST(periph_loc, test_subrating_req_reject)
+{
+	uint8_t err;
+	struct node_tx *tx;
+	struct node_rx_pdu *ntf;
+	//struct pdu_data *pdu;
+
+	struct node_rx_subrate_change su = {  };
+	struct pdu_data_llctrl_reject_ext_ind reject_ext_ind = {
+		.reject_opcode = PDU_DATA_LLCTRL_TYPE_SUBRATE_REQ,
+		.error_code = BT_HCI_ERR_UNSUPP_REMOTE_FEATURE
+	};
+
+	//TODO: Get an accurate remote feature
+	struct pdu_data_llctrl_reject_ind reject_ind = { .error_code =
+								 BT_HCI_ERR_UNSUPP_REMOTE_FEATURE };
+
+	/* Role */
+	test_set_role(&conn, BT_HCI_ROLE_PERIPHERAL);
+
+	/* Connect */
+	ull_cp_state_set(&conn, ULL_CP_CONNECTED);
+
+	/* Initiate a Connection Parameter Request Procedure */
+	err = ull_cp_subrate_request(&conn, SUBRATE_MIN, SUBRATE_MAX, LATENCY, CONTINUATION_NUMBER, SUPERVISION_TIMEOUT);
+	zassert_equal(err, BT_HCI_ERR_SUCCESS);
+
+	/* Prepare */
+	event_prepare(&conn);
+
+	/* Tx Queue should have one LL Control PDU */
+	lt_rx(LL_SUBRATE_REQ, &conn, &tx, &subrate_req);
+	lt_rx_q_is_empty(&conn);
+
+	/* Rx */
+	lt_tx(LL_REJECT_EXT_IND, &conn, &reject_ext_ind);
+
+	/* Done */
+	event_done(&conn);
+
+	event_prepare(&conn);
+	event_done(&conn);
+
+	/* Release Tx */
+	ull_cp_release_tx(&conn, tx);
+
+	ut_rx_node(NODE_SUBRATE_CHANGE, &ntf, &su);
+	ut_rx_q_is_empty();
+
+	/* Release Ntf */
+	release_ntf(ntf);
+	zassert_equal(llcp_ctx_buffers_free(), test_ctx_buffers_cnt(),
+		      "Free CTX buffers %d", llcp_ctx_buffers_free());
+}
+
 #if 0
 /*
  * Peripheral-initiated Connection Parameters Request procedure.

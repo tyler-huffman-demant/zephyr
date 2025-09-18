@@ -4,25 +4,49 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+//#include <zephyr/kernel.h>
+
+//#include <zephyr/sys/byteorder.h>
+//#include <zephyr/sys/slist.h>
+//#include <zephyr/sys/util.h>
+
 #include <zephyr/bluetooth/hci_types.h>
 
 #include "hal/ccm.h"
 
+#include "util/util.h"
+//#include "util/mem.h"
 #include "util/memq.h"
+#include "util/dbuf.h"
 
 #include "pdu_df.h"
 #include "lll/pdu_vendor.h"
 #include "pdu.h"
 
+//#include "ll.h"
+//#include "ll_settings.h"
+
 #include "lll.h"
+#include "ll_feat.h"
+#include "lll/lll_df_types.h"
 #include "lll_conn.h"
+//#include "lll_conn_iso.h"
 
 #include "ull_tx_queue.h"
 
+//#include "isoal.h"
+//#include "ull_iso_types.h"
+//#include "ull_conn_iso_types.h"
+//#include "ull_conn_iso_internal.h"
+
 #include "ull_conn_types.h"
 #include "ull_internal.h"
+//#include "ull_llcp.h"
+//#include "ull_llcp_features.h"
 #include "ull_llcp_internal.h"
-
+//#include "ull_conn_internal.h"
+//
+//#include <soc.h>
 #include "hal/debug.h"
 
 /* LLCP Local Procedure Subrating FSM states */
@@ -45,6 +69,8 @@ enum {
 	LP_SR_EVT_NTF,
 
 	LP_SR_EVT_SUBRATE_IND,
+
+	LP_SR_EVT_REJECT,
 };
 
 /* LLCP Remote Procedure Subrating FSM states */
@@ -175,6 +201,7 @@ static void lp_sr_st_wait_tx_sub_ind(struct ll_conn *conn, struct proc_ctx *ctx,
 {
 	switch (evt) {
 	case LP_SR_EVT_SUBRATE_IND:
+	case LP_SR_EVT_REJECT:
 		ctx->state = LP_SR_STATE_NOTIFY;
 	default:
 		/* Ignore other evts */
@@ -209,7 +236,6 @@ static void lp_sr_execute_fsm(struct ll_conn *conn, struct proc_ctx *ctx, uint8_
 		lp_sr_st_wait_tx_sub_ind(conn, ctx, evt, param);
 		break;
 
-
 	case LP_SR_STATE_NOTIFY:
 		lp_sr_st_notify(conn, ctx, evt, param);
 		break;
@@ -232,10 +258,12 @@ void llcp_lp_sr_tx_ack(struct ll_conn *conn, struct proc_ctx *ctx, void *param)
 void llcp_lp_sr_rx(struct ll_conn *conn, struct proc_ctx *ctx, struct node_rx_pdu *rx)
 {
 	struct pdu_data *pdu = (struct pdu_data *)rx->pdu;
-
 	switch (pdu->llctrl.opcode) {
 	case PDU_DATA_LLCTRL_TYPE_SUBRATE_IND:
 		lp_sr_execute_fsm(conn, ctx, LP_SR_EVT_SUBRATE_IND, pdu);
+		break;
+	case PDU_DATA_LLCTRL_TYPE_REJECT_EXT_IND:
+		lp_sr_execute_fsm(conn, ctx, LP_SR_EVT_REJECT, pdu);
 		break;
 	default:
 		conn->llcp_terminate.reason_final = BT_HCI_ERR_LMP_PDU_NOT_ALLOWED;

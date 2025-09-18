@@ -125,7 +125,7 @@ ZTEST(phy_central, test_phy_update_central_loc)
 						   .c_to_p_phy = PHY_2M,
 						   .p_to_c_phy = PHY_2M };
 	struct pdu_data_llctrl_length_rsp length_ntf = {
-		3 * PDU_DC_PAYLOAD_SIZE_MIN, PDU_DC_MAX_US(3 * PDU_DC_PAYLOAD_SIZE_MIN, PHY_2M),
+	3 * PDU_DC_PAYLOAD_SIZE_MIN, PDU_DC_MAX_US(3 * PDU_DC_PAYLOAD_SIZE_MIN, PHY_2M),
 		3 * PDU_DC_PAYLOAD_SIZE_MIN, PDU_DC_MAX_US(3 * PDU_DC_PAYLOAD_SIZE_MIN, PHY_2M)
 	};
 	uint16_t instant;
